@@ -1,21 +1,25 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFzY2ljbG8iLCJhIjoiY2ttcnp6eWNuMGQydTJvcGYzeGVsd2RqbSJ9.YqyHFex6gmdhgJoICN_V9A';
 var map;
 var evaluacionCategories = {
-  'Ciclovía Reprobada':'red',
-  'Ciclovía Aprobada':'darkgreen', 
-  'Cruce Aprobado':'orange',
-  'Cruce Reprobado':'lightgreen', 
+  'Ciclovía Reprobada':'#ff0000',
+  'Ciclovía Aprobada':'#6db86b', 
+  'Cruce Aprobado':'rgba(106, 215, 106, 0.65)',
+  'Cruce Reprobado':'rgba(255, 0, 0, 0.65)', 
 };
 
 var tipologiaCategories = {
-  'Ciclovía sobre calzada':'red',
-  'Ciclovía sobre platabanda':'blue',
-  'Ciclovía sobre bandejón':'orange', 
-  'Ciclovía sobre parque':'green',
-  'Ciclovía sobre vereda':'indigo',
-  'Ciclovereda':'violet',
+  'Ciclovía sobre calzada':'rgba(255, 0, 0, 0.90)',
+  'Ciclovía sobre platabanda':'rgba(126, 93, 226, 0.90)',
+  'Ciclovía sobre bandejón':'rgba(255, 166, 0, 0.90)', 
+  'Ciclovía sobre parque':'rgba(0, 128, 0, 0.90)',
+  'Ciclovía sobre vereda':'rgba(97, 176, 255, 0.90)',
+  'Ciclovereda':'rgba(238, 130, 238, 0.90)',
 };
 
+var geojson = {
+  "type": "FeatureCollection",
+  "features": []
+};
 
 $(document).ready(function(){
   var popup;
@@ -95,6 +99,30 @@ $(document).ready(function(){
       }
     });
 
+    map.addSource('selected', {
+      type:'geojson',
+      data:geojson
+    });
+
+    map.addLayer({
+      'id':'selected-route',
+      'source':'selected',
+      'type':'line',
+      'paint':{
+        'line-width':[
+          "interpolate",
+          ["exponential", 1.16],
+          ["zoom"],
+          15,
+          1.5,
+          22,
+          65
+        ],
+        'line-color':'#333',
+        'line-blur':3
+      }
+    });
+
     // Add the control to the map.
     map.addControl(
       new MapboxGeocoder({
@@ -105,24 +133,6 @@ $(document).ready(function(){
     );
 
     // Initial la
-    setLayout($('#quality-ciclo-switch')[0].checked, 'quality-ciclo');
-    setLayout($('#typology-ciclo-switch')[0].checked, 'typology-ciclo');
-    setLayout($('#errors-ciclo-switch')[0].checked, 'errors-ciclo');
-    
-    
-    $('#quality-ciclo-switch').on('change.bootstrapSwitch', function (e) {
-      setLayout(e.target.checked, 'quality-ciclo')
-    });
-    
-    $('#typology-ciclo-switch').on('change.bootstrapSwitch', function (e) {
-      setLayout(e.target.checked, 'typology-ciclo')
-    });
-    
-    $('#errors-ciclo-switch').on('change.bootstrapSwitch', function (e) {
-      setLayout(e.target.checked, 'errors-ciclo')
-      
-    });
-
     console.log("map loaded");
 
     map.on('click', function(e) {
@@ -140,6 +150,9 @@ $(document).ready(function(){
 
         let feature = features[0];
         createPopup(feature, e.lngLat, feature.layer.id); 
+
+        geojson.features = [feature];
+        map.getSource('selected').setData(geojson);
       }
 
     });
@@ -168,10 +181,17 @@ $(document).ready(function(){
       popupContent = getCrucesPopupContent(feature.properties);
     }
     
+    popup ? popup.remove() : '';
+    if(popup) {
+      geojson.features = [];
+      map.getSource('selected').setData(geojson);
+    }
+
     popup = new mapboxgl.Popup()
       .setLngLat(coord)
       .setHTML(popupContent)
       .addTo(map);
+
   }
 
   function getCycloviaPopupContent(feature) {
@@ -244,6 +264,9 @@ $(document).ready(function(){
     toggleCollapse('layer-tipologia');
     setLayout(false, 'tipologia');
     tipologiaCheckbox.prop( "checked", false );
+
+    let textId = 'text-' + id;
+    toggleDescriptionText(textId, checked);
   });
 
   tipologiaCheckbox.on("change", function(e) {
@@ -259,6 +282,9 @@ $(document).ready(function(){
     toggleCollapse('layer-evaluacion');
     setLayout(false, 'evaluacion');
     evaluacionCheckbox.prop( "checked", false );
+
+    let textId = 'text-' + id;
+    toggleDescriptionText(textId, checked);
   });
 
   function toggleCollapse(collapseId, isChecked=false) {
@@ -271,6 +297,22 @@ $(document).ready(function(){
       bsCollapse.hide();
     }
 
+  }
+
+  function toggleDescriptionText(elementId, isVisible) {
+    if(isVisible) {
+      $('.description-text').each(function(i) {
+        console.log(this.classList);
+        if(!this.classList.contains('d-none')) {
+          this.classList.add('d-none');
+        }
+      });
+
+      $('#'+elementId).removeClass('d-none');
+    } else {
+      $('#general-text').removeClass('d-none');
+    }
+    
   }
 
   // update legend

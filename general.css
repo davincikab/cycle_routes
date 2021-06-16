@@ -69,7 +69,11 @@ svg.mapboxgl-ctrl-geocoder--icon.mapboxgl-ctrl-geocoder--icon-search {
 }
 
 .info-window.closed {
-  right:-285px;
+  right: -300px;
+}
+
+.info-window.closed .toggle-button {
+  left:-10%;
 }
 
 .info-window .toggle-button span:first-child {
@@ -149,4 +153,26 @@ svg.mapboxgl-ctrl-geocoder--icon.mapboxgl-ctrl-geocoder--icon-search {
   justify-content: space-between;
   align-items: center;
   margin: 0.25em;
+}
+
+@media (max-width: 480px) {
+  .info-window {
+    top: 15%;
+    height: 80vh;
+    right: 3%;
+  }
+
+  .mapboxgl-ctrl-top-left .mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
+    width: 300px;
+    height: 36px;
+    font-size: 15px;
+    line-height: 20px;
+  }
+
+  .mapboxgl-ctrl-top-left {
+    top: 0;
+    right: 3%;
+    left: auto;
+  }
+
 }
