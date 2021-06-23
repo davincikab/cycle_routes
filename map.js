@@ -1,8 +1,8 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFzY2ljbG8iLCJhIjoiY2ttcnp6eWNuMGQydTJvcGYzeGVsd2RqbSJ9.YqyHFex6gmdhgJoICN_V9A';
 var map;
 var evaluacionCategories = {
-  'Ciclovía Reprobada':'#ff0000',
   'Ciclovía Aprobada':'#6db86b', 
+  'Ciclovía Reprobada':'#ff0000',
   'Cruce Aprobado':'rgba(106, 215, 106, 0.65)',
   'Cruce Reprobado':'rgba(255, 0, 0, 0.65)', 
 };
@@ -10,10 +10,10 @@ var evaluacionCategories = {
 var tipologiaCategories = {
   'Ciclovía sobre calzada':'rgba(255, 0, 0, 0.90)',
   'Ciclovía sobre platabanda':'rgba(126, 93, 226, 0.90)',
-  'Ciclovía sobre bandejón':'rgba(255, 166, 0, 0.90)', 
-  'Ciclovía sobre parque':'rgba(0, 128, 0, 0.90)',
   'Ciclovía sobre vereda':'rgba(97, 176, 255, 0.90)',
   'Ciclovereda':'rgba(238, 130, 238, 0.90)',
+  'Ciclovía sobre bandejón':'rgba(255, 166, 0, 0.90)', 
+  'Ciclovía sobre parque':'rgba(0, 128, 0, 0.90)',
 };
 
 var geojson = {
@@ -44,7 +44,15 @@ $(document).ready(function(){
       'source-layer':'evaluacion-drd8qy',
       'type':'line',
       'paint':{
-        'line-width':2,
+        'line-width':[
+          "interpolate",
+          ["exponential", 1.16],
+          ["zoom"],
+          15,
+          3,
+          22,
+          20
+        ],
         'line-color':[
           'match',
           ['get', 'Evaluació'],
@@ -75,7 +83,15 @@ $(document).ready(function(){
       'source-layer':'tipologia-a9tvmr',
       'type':'line',
       'paint':{
-        'line-width':2,
+        'line-width':[
+          "interpolate",
+          ["exponential", 1.16],
+          ["zoom"],
+          15,
+          3,
+          22,
+          20
+        ],
         'line-color':[
           'match',
           ['get', 'Tipología'],
@@ -300,14 +316,14 @@ $(document).ready(function(){
   }
 
   function toggleDescriptionText(elementId, isVisible) {
-    if(isVisible) {
-      $('.description-text').each(function(i) {
-        console.log(this.classList);
-        if(!this.classList.contains('d-none')) {
-          this.classList.add('d-none');
-        }
-      });
+    $('.description-text').each(function(i) {
+      console.log(this.classList);
+      if(!this.classList.contains('d-none')) {
+        this.classList.add('d-none');
+      }
+    });
 
+    if(isVisible) {
       $('#'+elementId).removeClass('d-none');
     } else {
       $('#general-text').removeClass('d-none');
