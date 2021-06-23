@@ -92,6 +92,11 @@ svg.mapboxgl-ctrl-geocoder--icon.mapboxgl-ctrl-geocoder--icon-search {
   display: block;
 }
 
+.info-window .info-section {
+  height: 80vh;
+  overflow-y: auto;
+}
+
 .info-window .info-header {
   background: #6b20d6;
   color: white;
@@ -128,10 +133,11 @@ svg.mapboxgl-ctrl-geocoder--icon.mapboxgl-ctrl-geocoder--icon-search {
 }
 
 .info-window .info-footer {
-  text-align: center;
-    position: absolute;
-    bottom: 2%;
+    text-align: center;
+    /* position: absolute;
+    bottom: 2%; */
     width: 60%;
+    margin-top:3em;
     margin-left: 20%;
     flex-direction: column;
     display: flex;
